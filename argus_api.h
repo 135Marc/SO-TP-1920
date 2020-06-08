@@ -11,8 +11,9 @@
 #include <ctype.h>
 #include <errno.h>
 #include <sys/wait.h>
-#include <printf.h>
-
+#include <stdio.h>
+#include <time.h>
+#include "task_struct.h"
 
 #endif
 

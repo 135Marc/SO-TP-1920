@@ -14,5 +14,7 @@ void printMenu() {
 
 int main(int argc,char* argv[]) {
     if (!strcmp(argv[1],"-h")) printMenu();
+    Task t = init_Task();
+    print_Task(t);
     return 0;
 }
