@@ -6,21 +6,16 @@ typedef struct task_list{
     struct task_list* prox;
 } *Task_List;
 
-void add_task_to_list() {
+void add_task_to_list(Task t) {
+    // TO-DO
+    Task_List result = malloc(sizeof(Task_List));
+
+}
+
+void remove_task_from_list(Task t) {
     // TO-DO
 }
 
-void remove_task_from_list() {
+void print_task_history(Task t) {
     // TO-DO
-}
-
-void print_task_history() {
-    // TO-DO
-}
-
-
-
-
-int main() {
-    return 0;
 }

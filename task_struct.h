@@ -18,11 +18,12 @@ typedef struct task {
 } task;
 
 Task init_Task();
-Task create_Task(int id,int status,char* cmds,int mexec,int times);
+Task create_Task(int id,int status,char* cmds,int mexec);
 Task add_commands(Task t,char* cmds);
 Task change_status(Task t, int new_status);
 Task change_maximum_time(Task t, int maximum);
 char* parse_status(int stat);
 void print_Task(Task t);
+
 
 #endif

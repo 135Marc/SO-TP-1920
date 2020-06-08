@@ -20,13 +20,13 @@ Task init_Task() {
     return result;
 }
 
-Task create_Task(int id,int status,char* cmds,int mexec,int times) {
+Task create_Task(int id,int status,char* cmds,int mexec) {
     Task result_task = malloc(sizeof(Task));
     result_task->ID = id;
     result_task->status = status;
     result_task->commands = strdup(cmds);
     result_task->max_execution = mexec;
-    result_task->time_stamp = times;
+    result_task->time_stamp = (int) time(NULL);
     return result_task;
 }
 
