@@ -15,5 +15,8 @@
 #include <time.h>
 #include "task_struct.h"
 
+void export_task(Task t);
+Task read_task(char* buffer);
+
 #endif
 

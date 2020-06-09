@@ -15,17 +15,49 @@ void printMenu() {
 
 void terminate_Task(int id) {
     printf("Recebi o ID %d para terminar a tarefa!\n",id);
+    // NEXT
+
     
 }
 
 void list_Tasks() {
-    // Listar TODAS as tarefas!
-    printf("Comando para listar tarefas invocado\n");
+    int task_fd = open("Logs/task.log",O_RDONLY,0666);
+    char buffer[1024];
+    char* temp;
+    char* args = malloc(sizeof(char*));
+    int r=0;
+    while ((r=read(task_fd,&buffer,1024))>0) {
+        temp = strdup(buffer);
+        while ((args = strsep(&temp,"\n"))!=NULL) {
+            if (args[0]>=48 && args[0]<=57) {
+                current = read_task(args);
+                if (current->status==1) print_Task(current);
+                free(current);
+            }
+        }
+    }
 }
 
 void show_History() {
     // Ler do ficheiro de tarefas já executadas
-    printf("Histórico vai aqui!\n");
+    int task_fd = open("Logs/task.log",O_RDONLY,0666);
+    char buffer[1024];
+    char* temp;
+    char* args = malloc(sizeof(char*));
+    int r=0;
+    while ((r=read(task_fd,&buffer,1024))>0) {
+        temp = strdup(buffer);
+        while ((args = strsep(&temp,"\n"))!=NULL) {
+            if (args[0]>=48 && args[0]<=57) {
+                current = read_task(args);
+                int stat = current->status;
+                if (stat==0||stat==-1||stat==2) print_Task(current);
+                free(current);
+            }
+        }
+    }
+
+
 }
 
 void execute_Task(char* argv[]) {
@@ -53,24 +85,23 @@ void set_Task_Max_Time(char* argv[]) {
 
 void parse_options(char* argv[]) {
 
-    if (!strcmp(argv[1],"-h")) printMenu();
-    if (!strcmp(argv[1],"-t")) terminate_Task(atoi(argv[2]));
-    if (!strcmp(argv[1],"-r")) show_History();
-    if (!strcmp(argv[1],"-l")) list_Tasks();
-    if (!strcmp(argv[1],"-m")) set_Task_Max_Time(argv);
-    if (!strcmp(argv[1],"-e")) execute_Task(argv);
-    if (!strcmp(argv[1],"-i")) set_Inactivity_Time(argv);
+    if (!strcmp(argv[1],"-h")) printMenu(); // DONE
+    if (!strcmp(argv[1],"-t")) terminate_Task(atoi(argv[2])); // TO-DO
+    if (!strcmp(argv[1],"-r")) show_History(); // DONE
+    if (!strcmp(argv[1],"-l")) list_Tasks(); // DONE
+    if (!strcmp(argv[1],"-m")) set_Task_Max_Time(argv); // TO-DO
+    if (!strcmp(argv[1],"-e")) execute_Task(argv); // TO-DO
+    if (!strcmp(argv[1],"-i")) set_Inactivity_Time(argv); // TO-DO
     
 }
 
 int main(int argc,char* argv[]) {
 
-    current = malloc(sizeof(Task));
-    current = init_Task();
+   // current = malloc(sizeof(Task));
+   // current = init_Task();
+   // current = add_commands(current,"ps | ifconfig");
+   // export_task(current);
     if (argv[1]!=NULL) parse_options(argv);
-  //  Task nt = create_Task(1,1,argv[2],10);
-  //  print_Task(nt);
-   // Task t = init_Task();
-   // print_Task(t);
+    
     return 0;
 }
