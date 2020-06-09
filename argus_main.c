@@ -63,6 +63,7 @@ void show_History() {
 void execute_Task(char* argv[]) {
     if (current!=NULL) {
         // Vai ter outras coisas aqui (...)
+        write_command_fifo(argv[2]);
         current = change_status(current,1);
         current = add_commands(current,argv[2]);
         print_Task(current);
@@ -96,8 +97,8 @@ void parse_options(char* argv[]) {
 
 int main(int argc,char* argv[]) {
 
-   // current = malloc(sizeof(Task));
-   // current = init_Task();
+    current = malloc(sizeof(Task));
+    current = init_Task();
    // current = add_commands(current,"ps | ifconfig");
    // export_task(current);
     if (argv[1]!=NULL) parse_options(argv);

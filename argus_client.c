@@ -1,29 +1,48 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
+#include "argus_api.h"
 
+int fd; 
 
-void write_fifo() {
-    int make = mkfifo("FIFOS/client_fifo",0666);
-	if(make<0) perror("Erro na criação do pipe!\n");
-	int fd = open("FIFOS/client_fifo",O_RDWR,0666); 
-	if (fd<0) perror("Erro na abertura do pipe!\n");
-
-    void* buf = malloc(1024);
-	int r = read(fd,buf,1024); 
-
-	
-	while ((r=read(0,buf,1024))>0) {
-        write(fd,buf,r);
-        free(buf);
+void sig_handler(int signum) {
+    if (signum == SIGINT) {
+        close(0);
+        close(fd);
+        printf("Fui tratado pelo sig handler!\n");
     }
 }
 
+void write_fifo() {
+	fd = open("FIFOs/client_fifo",O_RDWR,0666);
+    if (fd<0) perror("Erro na abertura do pipe!\n");
+
+    char buf[1024];
+	int r; 
+	
+	while ((r=read(0,&buf,1024))>0) {
+        write(fd,&buf,r);
+    }
+}
+
+void write_command_fifo(char* cmd) {
+    fd = open("FIFOs/client_fifo",O_WRONLY,0666);
+    if (fd<0) {
+        perror("Erro na abertura do pipe!\n");
+    }
+
+	int r;
+    char* buf = strdup(cmd);
+    buf = strcat(buf,"\n"); 
+	write(fd,buf,strlen(buf));
+    close(fd);
+    
+}
+
+/*
 int main() {
+    signal(SIGINT,sig_handler);
+    int make = mkfifo("FIFOs/client_fifo",0666);
+	if(make<0) perror("Erro na criação do pipe!\n");
     write_fifo();
     return 0;
 }
+
+*/

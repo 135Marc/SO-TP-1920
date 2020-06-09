@@ -11,9 +11,11 @@
 #include <ctype.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <time.h>
 #include "task_struct.h"
+#include "argus_client.h"
 
 void export_task(Task t);
 Task read_task(char* buffer);

@@ -47,7 +47,3 @@ Task read_task(char* buffer) {
     }
     return res;
 }
-
-void read_executed_tasks() {
-
-}
