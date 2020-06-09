@@ -61,7 +61,6 @@ void show_History() {
 }
 
 void execute_Task(char* argv[]) {
-   // printf("Recebi uma tarefa com os comandos -> %s\n",argv[2]);
     if (current!=NULL) {
         // Vai ter outras coisas aqui (...)
         current = change_status(current,1);
