@@ -1,17 +1,14 @@
 #include "argus_api.h"
 
-int fd; 
-
 void sig_handler(int signum) {
     if (signum == SIGINT) {
         close(0);
-        close(fd);
         printf("Fui tratado pelo sig handler!\n");
     }
 }
 
 void write_fifo() {
-	fd = open("FIFOs/client_fifo",O_RDWR,0666);
+	int fd = open("FIFOs/client_fifo",O_RDWR,0666);
     if (fd<0) perror("Erro na abertura do pipe!\n");
 
     char buf[1024];
@@ -23,7 +20,7 @@ void write_fifo() {
 }
 
 void write_command_fifo(char* cmd) {
-    fd = open("FIFOs/client_fifo",O_WRONLY,0666);
+    int fd = open("FIFOs/client_fifo",O_RDWR,0666);
     if (fd<0) {
         perror("Erro na abertura do pipe!\n");
     }

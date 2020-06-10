@@ -19,6 +19,7 @@
 
 void export_task(Task t);
 Task read_task(char* buffer);
+char** separate_commands(char* cmds);
 
 #endif
 
