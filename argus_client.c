@@ -8,7 +8,7 @@ void sig_handler(int signum) {
 }
 
 void write_fifo() {
-	int fd = open("FIFOs/client_fifo",O_RDWR,0666);
+	int fd = open("FIFOs/client_fifo",O_WRONLY,0666);
     if (fd<0) perror("Erro na abertura do pipe!\n");
 
     char buf[1024];
@@ -20,14 +20,13 @@ void write_fifo() {
 }
 
 void write_command_fifo(char* cmd) {
-    int fd = open("FIFOs/client_fifo",O_RDWR,0666);
+    int fd = open("FIFOs/client_fifo",O_WRONLY,0666);
     if (fd<0) {
         perror("Erro na abertura do pipe!\n");
     }
 
 	int r;
     char* buf = strdup(cmd);
-    buf = strcat(buf,"\n"); 
 	write(fd,buf,strlen(buf));
     close(fd);
     
