@@ -24,21 +24,7 @@ void write_command_fifo(char* cmd) {
     if (fd<0) {
         perror("Erro na abertura do pipe!\n");
     }
-
-	int r;
     char* buf = strdup(cmd);
 	write(fd,buf,strlen(buf));
     close(fd);
-    
 }
-
-/*
-int main() {
-    signal(SIGINT,sig_handler);
-    int make = mkfifo("FIFOs/client_fifo",0666);
-	if(make<0) perror("Erro na criação do pipe!\n");
-    write_fifo();
-    return 0;
-}
-
-*/

@@ -1,6 +1,14 @@
 #include "argus_api.h"
 
 int fd;
+Task current_Task;
+
+int max_task_time=-1;
+int max_inactivity_time=-1;
+int task_timer=0;
+int inactivity_timer=0;
+
+int active_processes=0;
 
 void sig_handler1(int signum) {
     if (signum == SIGINT) {
@@ -8,6 +16,24 @@ void sig_handler1(int signum) {
         close(1);
         close(fd);
     }
+    
+    if (signum == SIGALRM) {
+        // Verificar se todos os processos terminaram, continuar em loop a contar o tempo
+    }
+
+    if (signum == SIGCHLD) {
+        // Contar todos os processos-filho terminados!
+        if (active_processes > 0) active_processes--;
+        else {
+            printf("TODOS OS PROCESSOS FORAM TERMINADOS!\n");
+            active_processes=0;
+        }
+    }
+
+    if (signum == SIGPIPE) {
+        // Último a ser tratado
+    }
+
 
 }
 
@@ -42,14 +68,15 @@ void process_pipes(char* cmds) {
                     
                 }
                 else current_pipe+=1;
-                if (index==(2*size)+1) {
-                 // Se tiver argumentos nos comandos, escaxa
+                if (index==(2*size)+1) { // Se tiver argumentos nos comandos, escaxa
                 int pipes[2];
                 pipe(pipes);
                 int f1 = fork();
                     if (!f1) {
+                        active_processes++;
                         int f2=fork();
                         if (!f2) {
+                            active_processes++;
                             close(pipes[0]);
                             dup2(pipes[1],1);
                             close(pipes[1]);
@@ -115,7 +142,6 @@ void process_pipes(char* cmds) {
                                         dup2(0,multi_pipe[z][1]);
                                         dup2(multi_pipe[z][0],0);
                                         close(multi_pipe[z][0]);
-                                        
                                         execlp(comands_vector[z+1],"",NULL);
                                 }
 
@@ -134,17 +160,30 @@ void process_pipes(char* cmds) {
                                 close(multi_pipe[z][0]);
                             }                             
                         }
-                        for(int c1=0;c1<size;c1++) {
+
+                        for(int c1=0;c1<size;c1++) { // Fechar todos os descritores
                             close(multi_pipe[c1][1]);
                             close(multi_pipe[c1][0]);}
-
-                       // wait(&status);
-                           
              }                    
          } 
      }
 }
 
+
+void process_headers(char* cmd_headers) {
+    char* temp = strdup(cmd_headers);
+    char* args = malloc(sizeof(char*));
+    int is_max=0;
+    int is_inact=0;
+     while ((args = strsep(&temp," "))!=NULL) { 
+         if (!strcmp("MAX-TIME",args)) is_max=1;
+         if (!strcmp("INACTIVE-TIME",args)) is_inact=1;
+         if (is_max) max_task_time = atoi(args);
+         if (is_inact) max_inactivity_time = atoi(args);
+    }
+    printf("\nMAX TASK TIME: %d MAX INACTIVITY TIME: %d\n",max_task_time,max_inactivity_time);
+
+}
 
 
 void read_fifo() {
@@ -156,12 +195,15 @@ void read_fifo() {
 	char *buf = (char*) malloc(1024);
 	int r,status;
 	while ((r=read(fd,buf,1024))>0) {
+        // PENSAR QUANDO O BUFFER ENCHER, REALOCAR
         write(1,buf,r);
         buf[r]='\0';
+        if(strstr(buf,"MAX-TIME") || strstr(buf,"INACTIVE-TIME")) process_headers(buf);
         int pipe_number = elem_string('|',buf);
         if (pipe_number>=1) process_pipes(buf);
         else {   
             int f = fork();
+            // PENSAR NISTO COM ARGUMENTOS!!
             (!f) ? execlp(buf,"",NULL) : wait(&status);}
     }
 }
@@ -169,6 +211,7 @@ void read_fifo() {
 
 int main () {
     signal(SIGINT,sig_handler1);
+    signal(SIGCHLD,sig_handler1);
 	read_fifo();
 	return 0;
 }

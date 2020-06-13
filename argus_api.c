@@ -48,3 +48,14 @@ Task read_task(char* buffer) {
     return res;
 }
 
+
+char* task_To_String(Task t) {
+    char* results = (char*) malloc(512);
+    int id = t->ID;
+    int stats = t->status;
+    int execution = t->max_execution;
+    int tstamp = t->time_stamp;
+    char* cmds = strdup(t->commands);
+    int written = sprintf(results,"%d;%d;%s;%d;%d\n",id,stats,cmds,execution,tstamp);
+    return results;
+}
