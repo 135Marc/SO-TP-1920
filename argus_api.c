@@ -59,3 +59,56 @@ char* task_To_String(Task t) {
     int written = sprintf(results,"%d;%d;%s;%d;%d\n",id,stats,cmds,execution,tstamp);
     return results;
 }
+
+int get_last_task_ID() {
+    int last_id=0;
+    int tasks_fd = open("Logs/task.log",O_RDONLY,0666);
+    int bytes_read;
+    int acc=0;
+    char buf[1024];
+    int filesize = lseek(tasks_fd, (off_t) 0, SEEK_END); //filesize is lastby +offset
+
+    for (int i = filesize - 1; i >= 0; i--) { //read byte by byte from end
+        
+        lseek(tasks_fd, (off_t) i, SEEK_SET);
+        int n = read(tasks_fd, buf, 1);
+ 
+        if (n != 1) break;
+
+        else {
+            buf[n]='\0';
+            if (!strcmp(buf,";")) acc+=1;
+            else if (acc==4) {
+                last_id = atoi(buf);
+                break;
+            }
+        }
+    }
+    close(tasks_fd);
+    return last_id;
+}
+
+void update_task_status(int task_id,int status) {
+    int tasks_fd = open("Logs/task.log",O_RDWR,0666);
+    int bytes_read=0;
+    int acc=0;
+    int collon_found=0;
+    int id_found = 0;
+    char buffer[512];
+    while ((bytes_read=read(tasks_fd,buffer,1))) {
+        
+        if (!strcmp(buffer,";")) collon_found+=1;
+        else if (!strcmp(buffer,"\n")) collon_found = 0;
+        else if (atoi(buffer) == task_id && !collon_found) {
+            id_found=1;
+           
+        }
+        else if (collon_found && id_found) {
+          //  printf("CURRENT TASK STATUS: %s REQUEST CHANGE: %d\n",buffer,status);
+            write(tasks_fd,&status,1);
+            break;
+        }
+
+        buffer[bytes_read] = '\0';
+    }
+}

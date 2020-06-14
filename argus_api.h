@@ -20,6 +20,9 @@
 void export_task(Task t);
 Task read_task(char* buffer);
 char** separate_commands(char* cmds);
+int get_last_task_ID();
+char* task_To_String(Task t);
+void update_task_status(int task_id,int status);
 
 #endif
 
